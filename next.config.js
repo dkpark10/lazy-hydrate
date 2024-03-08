@@ -12,9 +12,7 @@ const mapModuleIds = (fn) => (compiler) => {
           const origId = mod.libIdent({ context });
           if (!origId) continue;
 
-          console.log(123213, origId);
           if (typeof origId === 'string' && origId.includes('lazy')) {
-            console.log(123213, origId);
           }
 
           const namedModuleId = fn(origId, mod.debugId);
@@ -41,14 +39,16 @@ const nextConfig = {
   publicRuntimeConfig: {
     version,
   },
-  webpack: (config, option) => {
+  webpack: (config, options) => {
     const lazyTargets = [
-      '/components/organisms/Footer/index.tsx',
-      '/components/organisms/BelowContents/index.tsx',
+      "@/components/lazy-component",
     ];
 
     config.plugins.push(
       mapModuleIds((id, debugId) => {
+        const isTarget = lazyTargets.some((target) => target.includes(id));
+        if (isTarget) return `lazy-${debugId}`
+
         return false;
       })
     );
