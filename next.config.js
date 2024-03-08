@@ -12,9 +12,6 @@ const mapModuleIds = (fn) => (compiler) => {
           const origId = mod.libIdent({ context });
           if (!origId) continue;
 
-          if (typeof origId === 'string' && origId.includes('lazy')) {
-          }
-
           const namedModuleId = fn(origId, mod.debugId);
 
           if (namedModuleId) {

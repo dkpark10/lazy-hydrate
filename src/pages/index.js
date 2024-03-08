@@ -16,7 +16,6 @@ export const getServerSideProps = async () => {
   };
 };
 
-
 /** @param { {data: number[]} } */
 export default function PageLazy({ data }) {
   return (
@@ -26,7 +25,7 @@ export default function PageLazy({ data }) {
           {item}
         </div>
       ))}
-      <LazyHydrate whenVisible>
+      <LazyHydrate whenVisible >
         <LazySwiper />
       </LazyHydrate>
     </main>
