@@ -33,13 +33,12 @@ class LazyHead extends Head {
 const backupScript = NextScript.getInlineScriptSource;
 
 NextScript.getInlineScriptSource = (props) => {
-  // dont let next load all dynamic IDS, let webpack manage it
   if (props?.__NEXT_DATA__?.dynamicIds) {
     const filteredDynamicModuleIds = props?.__NEXT_DATA__?.dynamicIds?.filter?.(
       moduleID => !moduleID?.includes?.('lazy'),
     );
+
     if (filteredDynamicModuleIds) {
-      // mutate dynamicIds from next data
       props.__NEXT_DATA__.dynamicIds = filteredDynamicModuleIds;
     }
   }
