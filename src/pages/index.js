@@ -6,7 +6,7 @@ const LazySwiper = dynamic(() => import("@/components/lazy-component"));
 
 export const getServerSideProps = async () => {
   const data = await new Promise((resolve) => {
-    resolve(Array.from({ length: 80 }, (_, idx) => idx));
+    resolve(Array.from({ length: 10 }, (_, idx) => idx));
   });
 
   return {
@@ -21,11 +21,11 @@ export default function PageLazy({ data }) {
   return (
     <main>
       {data?.map((item) => (
-        <div key={item} className="h-6">
+        <div key={item} style={{ height: 120 }}>
           {item}
         </div>
       ))}
-      <LazyHydrate whenVisible >
+      <LazyHydrate whenVisible>
         <LazySwiper />
       </LazyHydrate>
     </main>
