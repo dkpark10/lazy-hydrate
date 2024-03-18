@@ -1,27 +1,43 @@
 const { version } = require("./package.json");
 
-const mapModuleIds = (fn) => (compiler) => {
-  const { context } = compiler.options;
+class LazyModulePrefixPlugin {
+  constructor({ target }) {
+    this.target = target;
+  }
 
-  compiler.hooks.compilation.tap("ChangeModuleIdsPlugin", (compilation) => {
-    compilation.hooks.beforeModuleIds.tap("ChangeModuleIdsPlugin", (modules) => {
-      const { chunkGraph } = compilation;
+  apply(compiler) {
+    const { context } = compiler.options;
 
-      for (const mod of modules) {
-        if (mod.libIdent) {
-          const origId = mod.libIdent({ context });
-          if (!origId) continue;
+    compiler.hooks.compilation.tap("LazyModulePrefixPlugin", (compilation) => {
+      compilation.hooks.beforeModuleIds.tap(
+        "LazyModulePrefixPlugin",
+        (modules) => {
+          const { chunkGraph } = compilation;
 
-          const namedModuleId = fn(origId, mod.debugId);
+          for (const mod of modules) {
+            if (mod.libIdent) {
+              const origId = mod.libIdent({ context });
+              if (!origId) continue;
 
-          if (namedModuleId) {
-            chunkGraph.setModuleId(mod, namedModuleId);
+              const namedModuleId = this.setPrefix(origId, mod.debugId);
+
+              if (namedModuleId) {
+                chunkGraph.setModuleId(mod, namedModuleId);
+              }
+            }
           }
         }
-      }
+      );
     });
-  });
-};
+  }
+
+  setPrefix(id, debugId) {
+    const isTarget = this.target.some((target) => target.includes(id));
+    if (isTarget) return `lazy-${debugId}`;
+
+    return false;
+  }
+}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -36,17 +52,10 @@ const nextConfig = {
   publicRuntimeConfig: {
     version,
   },
-  webpack: (config, options) => {
-    const lazyTargets = [
-      "@/components/lazy-component",
-    ];
-
+  webpack: (config) => {
     config.plugins.push(
-      mapModuleIds((id, debugId) => {
-        const isTarget = lazyTargets.some((target) => target.includes(id));
-        if (isTarget) return `lazy-${debugId}`
-
-        return false;
+      new LazyModulePrefixPlugin({
+        target: ["@/components/lazy-component"],
       })
     );
 
