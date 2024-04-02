@@ -1,14 +1,15 @@
 const { version } = require("./package.json");
 const path = require("path");
-const fs = require("fs");
+const fs = require("fs").promises;
 
 class LazyModulePrefixPlugin {
   constructor({ lazyTargets }) {
     this.lazyTargets = lazyTargets;
+    this.origin = '';
   }
 
   apply(compiler) {
-    compiler.hooks.afterEmit.tap("LazyModulePrefixPlugin", (compilation) => {
+    compiler.hooks.afterEmit.tap("LazyModulePrefixPlugin", async (compilation) => {
       const manifestFilePath = path.join(
         compilation.outputOptions.path,
         "react-loadable-manifest.json"
@@ -20,11 +21,12 @@ class LazyModulePrefixPlugin {
       };
 
       try {
-        const manifestFileContent = fs.readFileSync(manifestFilePath, "utf8");
+        const manifestFileContent = await fs.readFile(manifestFilePath, "utf8");
         const manifest = JSON.parse(manifestFileContent);
 
         if (isEmpty(manifest)) return;
 
+        this.origin = manifest;
         for (const moduleId in manifest) {
           const isLazyTargets = this.lazyTargets.some((lazyTarget) => moduleId.includes(lazyTarget));
           if (isLazyTargets) {
@@ -33,7 +35,9 @@ class LazyModulePrefixPlugin {
           }
         }
 
-        fs.writeFileSync(manifestFilePath, JSON.stringify(manifest, null, 2), 'utf8');
+        fs.writeFile(manifestFilePath, JSON.stringify(manifest, null, 2), 'utf8').catch(() => {
+          fs.writeFile(this.origin, JSON.stringify(manifest, null, 2), 'utf8');
+        });
       } catch (error) {}
     });
   }
