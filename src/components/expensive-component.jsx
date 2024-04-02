@@ -1,7 +1,7 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import * as cheerio from "cheerio";
 
-export default function LazySwiper() {
+export default function ExpensiveComponent() {
   const $ = cheerio.load('<div>Slide</div>');
 
   return (

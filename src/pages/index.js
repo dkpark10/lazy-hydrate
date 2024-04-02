@@ -3,7 +3,7 @@ import LazyHydrate from "react-lazy-hydration";
 import dynamic from "next/dynamic";
 import Image from 'next/image';
 
-const LazySwiper = dynamic(() => import("@/components/lazy-component"));
+const ExpensiveComponent = dynamic(() => import("@/components/expensive-component"));
 
 const DynamicComponent = dynamic(() => import("@/components/dynamic-component"));
 
@@ -31,7 +31,7 @@ export default function PageLazy({ data }) {
       <DynamicComponent />
       <Image src="/mangom.jpg" width={100} height={100} alt="망곰 이미지" />
       <LazyHydrate whenVisible>
-        <LazySwiper />
+        <ExpensiveComponent />
       </LazyHydrate>
     </main>
   );

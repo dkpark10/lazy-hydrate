@@ -1,41 +1,41 @@
 const { version } = require("./package.json");
+const path = require("path");
+const fs = require("fs");
 
 class LazyModulePrefixPlugin {
-  constructor({ target }) {
-    this.target = target;
+  constructor({ lazyTargets }) {
+    this.lazyTargets = lazyTargets;
   }
 
   apply(compiler) {
-    const { context } = compiler.options;
+    compiler.hooks.afterEmit.tap("LazyModulePrefixPlugin", (compilation) => {
+      const manifestFilePath = path.join(
+        compilation.outputOptions.path,
+        "react-loadable-manifest.json"
+      );
 
-    compiler.hooks.compilation.tap("LazyModulePrefixPlugin", (compilation) => {
-      compilation.hooks.beforeModuleIds.tap(
-        "LazyModulePrefixPlugin",
-        (modules) => {
-          const { chunkGraph } = compilation;
+      const isEmpty = (obj) => {
+        if (Array.isArray(obj)) return obj.length <= 0;
+        return Object.keys(obj).length <= 0;
+      };
 
-          for (const mod of modules) {
-            if (mod.libIdent) {
-              const origId = mod.libIdent({ context });
-              if (!origId) continue;
+      try {
+        const manifestFileContent = fs.readFileSync(manifestFilePath, "utf8");
+        const manifest = JSON.parse(manifestFileContent);
 
-              const namedModuleId = this.setPrefix(origId, mod.debugId);
+        if (isEmpty(manifest)) return;
 
-              if (namedModuleId) {
-                chunkGraph.setModuleId(mod, namedModuleId);
-              }
-            }
+        for (const moduleId in manifest) {
+          const isLazyTargets = this.lazyTargets.some((lazyTarget) => moduleId.includes(lazyTarget));
+          if (isLazyTargets) {
+            const id = moduleId.replace(/\/([^/]+)$/, '/lazy-hydrated-$1');
+            manifest[moduleId].id = id;
           }
         }
-      );
+
+        fs.writeFileSync(manifestFilePath, JSON.stringify(manifest, null, 2), 'utf8');
+      } catch (error) {}
     });
-  }
-
-  setPrefix(id, debugId) {
-    const isTarget = this.target.some((target) => target.includes(id));
-    if (isTarget) return `lazy-${debugId}`;
-
-    return false;
   }
 }
 
@@ -55,7 +55,7 @@ const nextConfig = {
   webpack: (config) => {
     config.plugins.push(
       new LazyModulePrefixPlugin({
-        target: ["@/components/lazy-component"],
+        lazyTargets: ["@/components/expensive-component"],
       })
     );
 

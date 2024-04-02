@@ -10,7 +10,7 @@ class LazyHead extends Head {
       );
       // search and filter modules based on marker ID
       const chunksToExclude = Object.values(loadableManifest).filter(
-        manifestModule => manifestModule?.id?.includes('lazy') || false,
+        manifestModule => manifestModule?.id?.includes('lazy-hydrated') || false,
       );
       const excludeMap = chunksToExclude?.reduce?.((acc, chunks) => {
         if (chunks.files) {
@@ -35,7 +35,7 @@ const backupScript = NextScript.getInlineScriptSource;
 NextScript.getInlineScriptSource = (props) => {
   if (props?.__NEXT_DATA__?.dynamicIds) {
     const filteredDynamicModuleIds = props?.__NEXT_DATA__?.dynamicIds?.filter?.(
-      moduleID => !moduleID?.includes?.('lazy'),
+      moduleID => !moduleID?.includes?.('lazy-hydrated'),
     );
 
     if (filteredDynamicModuleIds) {
