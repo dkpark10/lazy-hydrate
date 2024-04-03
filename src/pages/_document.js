@@ -30,24 +30,25 @@ class LazyHead extends Head {
   }
 }
 
-const backupScript = NextScript.getInlineScriptSource;
+// const backupScript = NextScript.getInlineScriptSource;
 
-NextScript.getInlineScriptSource = (props) => {
-  if (props?.__NEXT_DATA__?.dynamicIds) {
-    const filteredDynamicModuleIds = props?.__NEXT_DATA__?.dynamicIds?.filter?.(
-      moduleID => !moduleID?.includes?.('lazy-hydrated'),
-    );
+// NextScript.getInlineScriptSource = (props) => {
+//   if (props?.__NEXT_DATA__?.dynamicIds) {
+//     const filteredDynamicModuleIds = props?.__NEXT_DATA__?.dynamicIds?.filter?.(
+//       moduleID => !moduleID?.includes?.('lazy-hydrated'),
+//     );
 
-    if (filteredDynamicModuleIds) {
-      props.__NEXT_DATA__.dynamicIds = filteredDynamicModuleIds;
-    }
-  }
-  return backupScript(props);
-};
+//     if (filteredDynamicModuleIds) {
+//       props.__NEXT_DATA__.dynamicIds = filteredDynamicModuleIds;
+//     }
+//   }
+//   return backupScript(props);
+// };
 
 export default function Document() {
   return (
     <Html lang="en">
+      {/* <Head /> */}
       <LazyHead />
       <body>
         <Main />

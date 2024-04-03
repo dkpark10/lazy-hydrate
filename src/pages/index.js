@@ -1,9 +1,6 @@
-import LazyHydrate from "react-lazy-hydration";
-// import LazyHydrate from "@/components/react-lz-hydrate";
-import dynamic from "next/dynamic";
 import Image from 'next/image';
-
-const ExpensiveComponent = dynamic(() => import("@/components/expensive-component"));
+import dynamic from "next/dynamic";
+import Parent from '@/components/parent';
 
 const DynamicComponent = dynamic(() => import("@/components/dynamic-component"));
 
@@ -30,9 +27,7 @@ export default function PageLazy({ data }) {
       ))}
       <DynamicComponent />
       <Image src="/mangom.jpg" width={100} height={100} alt="망곰 이미지" />
-      <LazyHydrate whenVisible>
-        <ExpensiveComponent />
-      </LazyHydrate>
+      <Parent />
     </main>
   );
 }
