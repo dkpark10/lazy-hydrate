@@ -1,3 +1,3 @@
 export default function DynamicComponent() {
-  return <div>123</div>;
+  return <div>dynamic-123</div>;
 }

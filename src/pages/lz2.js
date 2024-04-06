@@ -1,13 +1,9 @@
 import Image from "next/image";
-import dynamic from "next/dynamic";
 import LazyHydrate from "../components/react-lz-hydrate";
+import dynamic from "next/dynamic";
 
 const ExpensiveComponent = dynamic(() =>
   import("@/components/expensive-component")
-);
-
-const DynamicComponent = dynamic(() =>
-  import("@/components/dynamic-component")
 );
 
 export const getServerSideProps = async () => {
@@ -17,7 +13,7 @@ export const getServerSideProps = async () => {
 
   return {
     props: {
-    data,
+      data,
     },
   };
 };
@@ -26,16 +22,15 @@ export const getServerSideProps = async () => {
 export default function PageLazy({ data }) {
   return (
     <main>
+      <Image src="/mangom.jpg" width={100} height={100} alt="망곰 이미지" />
+      <LazyHydrate on="touchstart" didHydrate={() => console.log("hydrated")}>
+        <ExpensiveComponent data={data} />
+      </LazyHydrate>
       {data?.map((item) => (
         <div key={item} style={{ height: 140 }}>
           {item + 1}
         </div>
       ))}
-      <DynamicComponent />
-      <Image src="/mangom.jpg" width={100} height={100} alt="망곰 이미지" />
-      <LazyHydrate on="mouseenter" didHydrate={() => console.log("hydrated")}>
-        <ExpensiveComponent data={data} />
-      </LazyHydrate>
     </main>
   );
 }

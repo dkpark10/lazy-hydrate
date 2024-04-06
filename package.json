@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 8080",
     "lint": "next lint",
     "test": "playwright test",
     "test:ui": "playwright test --ui"
@@ -16,6 +16,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-lazy-hydration": "^0.1.0",
+    "sharp": "^0.33.3",
     "swiper": "^11.0.6"
   },
   "devDependencies": {
