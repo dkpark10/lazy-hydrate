@@ -1,8 +1,8 @@
 import Image from "next/image";
 import LazyHydrate from "../components/react-lz-hydrate";
-import dynamic from "next/dynamic";
+import { Suspense, lazy } from "react";
 
-const ExpensiveComponent = dynamic(() =>
+const ExpensiveComponent = lazy(() =>
   import("@/components/expensive-component")
 );
 
@@ -23,8 +23,10 @@ export default function PageLazy({ data }) {
   return (
     <main>
       <Image src="/mangom.jpg" width={100} height={100} alt="망곰 이미지" />
-      <LazyHydrate on={["touchstart","touchmive"]} didHydrate={() => console.log("hydrated")}>
-        <ExpensiveComponent data={data} />
+      <LazyHydrate on={["touchstart", "touchmove", "click"]} didHydrate={() => console.log("hydrated")}>
+        <Suspense fallback={<div>12323</div>}>
+          <ExpensiveComponent data={data} />
+        </Suspense>
       </LazyHydrate>
       {data?.map((item) => (
         <div key={item} style={{ height: 140 }}>

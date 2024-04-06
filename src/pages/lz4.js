@@ -23,7 +23,7 @@ export default function PageLazy({ data }) {
   return (
     <main>
       <Image src="/mangom.jpg" width={100} height={100} alt="망곰 이미지" />
-      <LazyHydrate on={["touchstart","touchmive"]} didHydrate={() => console.log("hydrated")}>
+      <LazyHydrate whenVisible didHydrate={() => console.log("hydrated")}>
         <ExpensiveComponent data={data} />
       </LazyHydrate>
       {data?.map((item) => (
