@@ -64,7 +64,7 @@ function LazyHydrate(props) {
 
     const cleanupFns = [];
     function cleanup() {
-      cleanupFns.forEach(fn => {
+      cleanupFns.forEach((fn) => {
         fn();
       });
     }
@@ -84,11 +84,11 @@ function LazyHydrate(props) {
           typeof whenVisible === "object"
             ? whenVisible
             : {
-                rootMargin: "250px"
+                rootMargin: "250px",
               };
 
-        const io = new IntersectionObserver(entries => {
-          entries.forEach(entry => {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
             if (entry.isIntersecting || entry.intersectionRatio > 0) {
               hydrate();
             }
@@ -123,10 +123,10 @@ function LazyHydrate(props) {
 
     const events = [].concat(on);
 
-    events.forEach(event => {
+    events.forEach((event) => {
       rootElement.addEventListener(event, hydrate, {
         once: true,
-        passive: true
+        passive: true,
       });
       cleanupFns.push(() => {
         rootElement.removeEventListener(event, hydrate, {});
@@ -134,7 +134,7 @@ function LazyHydrate(props) {
     });
 
     return cleanup;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     hydrated,
     on,
@@ -143,12 +143,10 @@ function LazyHydrate(props) {
     whenVisible,
     didHydrate,
     promise,
-    noWrapper
+    noWrapper,
   ]);
 
-  const WrapperElement = ((typeof noWrapper === "string"
-    ? noWrapper
-    : "div"))
+  const WrapperElement = typeof noWrapper === "string" ? noWrapper : "div";
 
   if (hydrated) {
     if (noWrapper) {

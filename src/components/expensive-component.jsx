@@ -1,4 +1,3 @@
-import { renderToString } from 'react-dom/server';
 import { Swiper, SwiperSlide } from "swiper/react";
 import * as cheerio from "cheerio";
 
@@ -16,5 +15,3 @@ export default function ExpensiveComponent({ data }) {
     </Swiper>
   );
 }
-
-export const expensiveComponentHtml = renderToString(ExpensiveComponent);
