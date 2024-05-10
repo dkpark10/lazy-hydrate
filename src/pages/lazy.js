@@ -1,9 +1,10 @@
 import Image from "next/image";
 import dynamic from "next/dynamic";
+import { Suspense, lazy } from "react";
 import LazyHydrate from "../components/react-lazy-hydrate";
 
-const DynamicExpensiveComponent = dynamic(
-  () => import('@/components/expensive-component'),
+const LazyExpensiveComponent = lazy(() =>
+  import("@/components/expensive-component")
 );
 
 const DynamicComponent = dynamic(() =>
@@ -36,7 +37,17 @@ export default function PageLazy({ data, visible }) {
         on={!visible && ['touchstart', 'mouseenter']}
         didHydrate={() => console.log("hydrated")}
       >
-        <DynamicExpensiveComponent data={data} />
+        <Suspense
+          fallback={
+            <>
+              {data.map((d) => (
+                <div key={d}>Slide {d}</div>
+              ))}
+            </>
+          }
+        >
+          <LazyExpensiveComponent data={data} />
+        </Suspense>
       </LazyHydrate>
       {data?.map((item) => (
         <div key={item} style={{ height: 140 }}>
