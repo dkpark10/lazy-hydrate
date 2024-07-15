@@ -25,7 +25,7 @@ export const getServerSideProps = async (req) => {
 };
 
 /** @param { {data: number[]} } */
-export default function PageLazy({ data, visible }) {
+export default function Index({ data, visible }) {
   return (
     <main>
       <h1>

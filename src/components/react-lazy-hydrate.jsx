@@ -1,4 +1,5 @@
 import * as React from "react";
+// import { renderToString } from "react-dom/server";
 
 const isDev = process.env.NODE_ENV === 'development';
 const isBrowser = typeof window !== 'undefined';

@@ -29,23 +29,13 @@ export const getServerSideProps = async (req) => {
 export default function PageLazy({ data, visible }) {
   return (
     <main>
-      <h1>
-        event: {visible ? 'intersect' : 'touchstart, mouseenter'}
-      </h1>
+      <h1>event: {visible ? 'intersect' : 'touchstart, mouseenter'}</h1>
       <LazyHydrate
         whenVisible={visible}
         on={!visible && ['touchstart', 'mouseenter']}
-        didHydrate={() => console.log("hydrated")}
+        didHydrate={() => console.log('hydrated')}
       >
-        <Suspense
-          fallback={
-            <>
-              {data.map((d) => (
-                <div key={d}>Slide {d}</div>
-              ))}
-            </>
-          }
-        >
+        <Suspense fallback={<LazyExpensiveComponent data={data} />}>
           <LazyExpensiveComponent data={data} />
         </Suspense>
       </LazyHydrate>
