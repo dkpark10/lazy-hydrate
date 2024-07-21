@@ -1,12 +1,13 @@
 import { test, expect } from "@playwright/test";
 
 test("lazy hydrated", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/?visible=true");
 
   let notRequestCall = false;
   await page.route("**/*", async (route) => {
     const url = route.request().url();
-    if (url.includes("lazy")) {
+
+    if (/lazy-hydration/g.test(url)) {
       notRequestCall = true;
     }
     await route.continue();
@@ -23,9 +24,12 @@ test("lazy hydrated", async ({ page }) => {
     }
   });
 
+  // hydration 과정중 깜빡임 현상이 없어야 한다.
+  expect(await page.getByTestId('lazy-container').innerHTML()).not.toBeFalsy();
+
   await page.route("**/*", async (route) => {
     const url = route.request().url();
-    if (url.includes("lazy")) {
+    if (/lazy-hydration/g.test(url)) {
       notRequestCall = true;
     }
     await route.continue();

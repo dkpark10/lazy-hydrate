@@ -1,13 +1,13 @@
 import Image from "next/image";
-import dynamic from "next/dynamic";
+import { lazy } from "react";
 import LazyHydrate from "../components/react-lazy-hydrate";
 
-const DynamicExpensiveComponent = dynamic(
-  () => import('@/components/expensive-component'),
-);
-
-const DynamicComponent = dynamic(() =>
-  import("@/components/dynamic-component")
+const LazyExpensiveComponent = lazy(() =>
+  import(
+    /* webpackChunkName: "lazy-hydration" */
+    /* webpackMode: "lazy-once" */
+    '@/components/expensive-component'
+  )
 );
 
 export const getServerSideProps = async (req) => {
@@ -25,25 +25,23 @@ export const getServerSideProps = async (req) => {
 };
 
 /** @param { {data: number[]} } */
-export default function Index({ data, visible }) {
+export default function PageLazy({ data, visible }) {
   return (
     <main>
-      <h1>
-        event: {visible ? 'intersect' : 'touchstart, mouseenter'}
-      </h1>
-      <LazyHydrate
-        whenVisible={visible}
-        on={!visible && ['touchstart', 'mouseenter']}
-        didHydrate={() => console.log("hydrated")}
-      >
-        <DynamicExpensiveComponent data={data} />
-      </LazyHydrate>
+      <h1>event: {visible ? 'intersect' : 'touchstart, mouseenter'}</h1>
       {data?.map((item) => (
         <div key={item} style={{ height: 140 }}>
           {item + 1}
         </div>
       ))}
-      <DynamicComponent />
+      <LazyHydrate
+        data-testid='lazy-container'
+        whenVisible={visible}
+        on={!visible && ['touchstart', 'mouseenter']}
+        didHydrate={() => console.log('hydrated')}
+      >
+        <LazyExpensiveComponent data={data} />
+      </LazyHydrate>
       <Image src="/mangom.jpg" width={100} height={100} alt="망곰 이미지" />
     </main>
   );
