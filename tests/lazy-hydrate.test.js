@@ -1,40 +1,73 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from '@playwright/test';
 
-test("lazy hydrated", async ({ page }) => {
-  await page.goto("/?visible=true");
+test.describe('lazy hydration test', () => {
+  test('react lazy', async ({ page }) => {
+    await page.goto('/?visible=true');
 
-  let notRequestCall = false;
-  await page.route("**/*", async (route) => {
-    const url = route.request().url();
+    expect(await page.getByRole('heading', { level: 1 }).textContent()).toBe(
+      'event: intersect'
+    );
 
-    if (/lazy-hydration/g.test(url)) {
-      notRequestCall = true;
-    }
-    await route.continue();
-    return;
+    let requestCall = false;
+    await page.route('**/*', async (route) => {
+      const url = route.request().url();
+
+      if (/lazy-hydration/g.test(url)) {
+        requestCall = true;
+      }
+      await route.continue();
+      return;
+    });
+
+    expect(requestCall).toBeFalsy();
+
+    await page.evaluate(async () => {
+      const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      for (let i = 0; i < document.body.scrollHeight; i += 100) {
+        window.scrollTo(0, i);
+        await delay(100);
+      }
+    });
+
+    // hydration 과정중 깜빡임 현상이 없어야 한다.
+    expect(
+      await page.getByTestId('lazy-container').innerHTML()
+    ).not.toBeFalsy();
+
+    await page.route('**/*', async (route) => {
+      const url = route.request().url();
+      if (/lazy-hydration/g.test(url)) {
+        requestCall = true;
+      }
+      await route.continue();
+      return;
+    });
+
+    expect(requestCall).toBeTruthy();
   });
 
-  expect(notRequestCall).toBeFalsy();
+  test('next dynamic', async ({ page }) => {
+    let requestCall = false;
+    await page.route('**/*', async (route) => {
+      const url = route.request().url();
 
-  await page.evaluate(async () => {
-    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-    for (let i = 0; i < document.body.scrollHeight; i += 100) {
-      window.scrollTo(0, i);
-      await delay(100);
-    }
+      if (/lazy-hydration/g.test(url)) {
+        requestCall = true;
+      }
+      await route.continue();
+      return;
+    });
+
+    await page.goto('/dynamic?visible=true');
+
+    expect(await page.getByRole('heading', { level: 1 }).textContent()).toBe(
+      'event: intersect'
+    );
+    expect(requestCall).toBeTruthy();
+
+    // hydration 과정중 깜빡임 현상이 없어야 한다.
+    expect(
+      await page.getByTestId('lazy-container').innerHTML()
+    ).not.toBeFalsy();
   });
-
-  // hydration 과정중 깜빡임 현상이 없어야 한다.
-  expect(await page.getByTestId('lazy-container').innerHTML()).not.toBeFalsy();
-
-  await page.route("**/*", async (route) => {
-    const url = route.request().url();
-    if (/lazy-hydration/g.test(url)) {
-      notRequestCall = true;
-    }
-    await route.continue();
-    return;
-  });
-
-  expect(notRequestCall).toBeTruthy();
 });

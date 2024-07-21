@@ -1,9 +1,9 @@
-import Image from "next/image";
-import dynamic from "next/dynamic";
-import LazyHydrate from "../components/react-lazy-hydrate";
+import Image from 'next/image';
+import dynamic from 'next/dynamic';
+import LazyHydrate from '../components/react-lazy-hydrate';
 
-const DynamicExpensiveComponent = dynamic(
-  () => import('@/components/expensive-component'),
+const DynamicExpensiveComponent = dynamic(() =>
+  import('@/components/expensive-component')
 );
 
 export const getServerSideProps = async (req) => {
@@ -24,13 +24,12 @@ export const getServerSideProps = async (req) => {
 export default function Index({ data, visible }) {
   return (
     <main>
-      <h1>
-        event: {visible ? 'intersect' : 'touchstart, mouseenter'}
-      </h1>
+      <h1>event: {visible ? 'intersect' : 'touchstart, mouseenter'}</h1>
       <LazyHydrate
+        data-testid="lazy-container"
         whenVisible={visible}
         on={!visible && ['touchstart', 'mouseenter']}
-        didHydrate={() => console.log("hydrated")}
+        didHydrate={() => console.log('hydrated')}
       >
         <DynamicExpensiveComponent data={data} />
       </LazyHydrate>
