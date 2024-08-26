@@ -4,8 +4,7 @@ import LazyHydrate from "../components/react-lazy-hydrate";
 
 const LazyExpensiveComponent = lazy(() =>
   import(
-    /* webpackChunkName: "lazy-hydration" */
-    /* webpackMode: "lazy-once" */
+    /* webpackChunkName: "expensive-component" */
     '@/components/expensive-component'
   )
 );

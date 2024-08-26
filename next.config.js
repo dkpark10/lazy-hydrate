@@ -51,7 +51,7 @@ const nextConfig = {
   },
   output: "standalone",
   images: {
-    domains: ["shop.zumst.com", "static.hubzum.zumst.com"],
+    domains: ["shop.zumst.com", "static.hubzum.zumst.com", "via.placeholder.com"],
   },
   publicRuntimeConfig: {
     version,
